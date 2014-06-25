@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>test es6.js</title>
+  <script src="es6.js"></script>
+</head>
+<body>
+  <script>
+    var a = 1; 
+    var b = 2;
+    var name = "paper";
+    var time = "today"
+    
+    var str = 'Hello ${name} and ${nobody}, how are you ${time}, and sum = ${a + b}';
+    var reg = /\$\{([^${}]+)\}/g;
+    var result = str.replace(reg, function(a,b,c){
+      //console.log(a,b,c)
+      
+      try{
+        console.log( b );
+        console.log( typeof b );
+        return eval(b);
+      }catch(e){
+        return a;
+      }
+    
+      
+    });
+    
+    console.log(result)
+    
+    
+    
+  </script>
+</body>
+</html>
