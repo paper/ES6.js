@@ -120,14 +120,14 @@ ES6.templateString = function(data, ts){
 
       if( value == undefined ){
         var keys = getObjKeys(data);		
-        var keyStr = '';
+        var keysStr = '';
         
         keys.forEach(function(v){
-          keyStr += "("+ v +")";
+          keysStr += "("+ v +")";
         });
-        keyStr = "[" + keyStr + "]";
+        keysStr = "[" + keysStr + "]";
 
-        var c = y.replace(new RegExp(keyStr, "g"), function(a){
+        var c = y.replace(new RegExp(keysStr, "g"), function(a){
           return data[a];
         });
         
