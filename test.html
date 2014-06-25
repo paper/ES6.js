@@ -7,28 +7,29 @@
 </head>
 <body>
   <script>
-    var a = 1; 
-    var b = 2;
-    var name = "paper";
-    var time = "today"
+		var log = console.log;
+		
+		//测试templateString
+		;(function(){
+			var name = "Bob", time = "today";
+			var r = ES6.templateString({
+				name : name,
+				time : time
+			},'Hello ${name}, how are you ${time}?');
+			console.log(r);
+		})()
+		
+		;(function(){
+			var x = 1, y = 2;
+			var r = ES6.templateString({
+				x : x,
+				y : y
+			},'${ x } + ${ y } = ${ x + y }');
+			log(r);
+		})()
     
-    var str = 'Hello ${name} and ${nobody}, how are you ${time}, and sum = ${a + b}';
-    var reg = /\$\{([^${}]+)\}/g;
-    var result = str.replace(reg, function(a,b,c){
-      //console.log(a,b,c)
-      
-      try{
-        console.log( b );
-        console.log( typeof b );
-        return eval(b);
-      }catch(e){
-        return a;
-      }
+		
     
-      
-    });
-    
-    console.log(result)
     
     
     

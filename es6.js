@@ -58,14 +58,89 @@ String.prototype.repeat = function(num){
   return result;
 }
 
-ES6.templateString = function(ts){
-  var reg = /\$\{([^${}]+)\}/g;
-  var r = ts.match(reg);
-  var result = ts;
-  
+/**
+	var name = "Bob", time = "today";
+	var r = ES6.templateString('Hello ${name}, how are you ${time}?');
+	
+	这种太难实现
+	因为字符串里面的 name, time 不知道是取局部变量的，还是全局变量的。
+	比如：
+	
+	var name = "paper", time = "tomorrow";
+	;(function(){
+		var name = "Bob", time = "today";
+		var r = ES6.templateString('Hello ${name}, how are you ${time}?');
+	})()
+	
+	r 应该返回的是：Hello Bob, how are you today?'
+	怎么才能让 templateString 函数取局部变量的值呢？？
+	
+	-----------------------------------------
+	
+	所以目前的API是：
+	var name = "Bob", time = "today";
+	var r1 = ES6.templateString({
+		name : name,
+		time : time
+	},'Hello ${name}, how are you ${time}?');
+	=> 'Hello Bob, how are you today?'
+	
+	var x = 1, y = 2;
+	var r2 = ES6.templateString({
+		x : x,
+		y : y
+	},'${ x } + ${ y } = ${ x + y }');
+	=> 1 + 2 = 3
+*/
+ES6.templateString = function(data, ts){
+  var reg = /\${([^${}]+)}/g,
+			r = ts.match(reg),
+			result = ts;
+	
   if( r == null ) return result;
-  
-  
+
+	function getObjKeys(obj){
+		var keys = [];
+		var hasOwnProperty = Object.prototype.hasOwnProperty;
+		
+		for(var key in obj){
+			if( hasOwnProperty.call(obj, key) ){
+				keys.push(key);
+			}
+		}
+		
+		return keys;
+	}
+	
+  result = ts.replace(reg, function(x, y){
+		try{
+			y = y.trim();
+			var value = data[y];
+
+			if( value == undefined ){
+				var keys = getObjKeys(data);		
+				var keyStr = '';
+				
+				keys.forEach(function(v){
+					keyStr += "("+ v +")";
+				});
+				keyStr = "[" + keyStr + "]";
+
+				var c = y.replace(new RegExp(keyStr, "g"), function(a){
+					return data[a];
+				});
+				
+				return eval(c);
+			}else{
+				return value;
+			}
+		}catch(e){
+			return x;
+		}
+	});
+	
+	return result;
+	
 }
 
 
