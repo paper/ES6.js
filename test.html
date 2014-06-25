@@ -1,38 +1,33 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>test es6.js</title>
-  <script src="es6.js"></script>
+<meta charset="UTF-8">
+<title>test es6.js</title>
+<script src="es6.js"></script>
 </head>
 <body>
-  <script>
-		var log = console.log;
-		
-		//测试templateString
-		;(function(){
-			var name = "Bob", time = "today";
-			var r = ES6.templateString({
-				name : name,
-				time : time
-			},'Hello ${name}, how are you ${time}?');
-			console.log(r);
-		})()
-		
-		;(function(){
-			var x = 1, y = 2;
-			var r = ES6.templateString({
-				x : x,
-				y : y
-			},'${ x } + ${ y } = ${ x + y }');
-			log(r);
-		})()
-    
-		
-    
-    
-    
-    
-  </script>
+<script>
+  var log = console.log;
+  
+  //测试templateString
+  ;(function(){
+    var name = "Bob", time = "today";
+    var r = ES6.templateString({
+      name : name,
+      time : time
+    },'Hello ${name}, how are you ${time}?');
+    console.log(r);
+  })()
+  
+  ;(function(){
+    var x = 1, y = 2;
+    var r = ES6.templateString({
+      x : x,
+      y : y
+    },'${ x } + ${ y } = ${ x + y }');
+    log(r);
+  })()
+  
+</script>
 </body>
 </html>
