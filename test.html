@@ -1,14 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>test es6.js</title>
 <script src="es6.js"></script>
 </head>
 <body>
+<p>1</p>
+<p>2</p>
+<p>3</p>
+
 <script>
-  var log = console.log;
-  
+
   //测试templateString
   ;(function(){
     var name = "Bob", time = "today";
@@ -16,7 +19,7 @@
       name : name,
       time : time
     },'Hello ${name}, how are you ${time}?');
-    console.log(r);
+    //console.log(r);
   })()
   
   ;(function(){
@@ -25,8 +28,52 @@
       x : x,
       y : y
     },'${ x } + ${ y } = ${ x + y }');
-    log(r);
+    //console.log(r);
   })()
+  
+  //测试 数组的扩展  
+  ;(function(){
+        
+    var ps = document.querySelectorAll('p');
+
+    Array.from(ps).forEach(function (p) {
+      //console.log(p);
+    });
+    
+    Array.from(ps, function(v){
+      v.innerHTML += "a"
+    });
+    
+    
+    //console.log( Array.of(3, 1, 8) ); // [3,11,8]
+    //console.log( Array.of(3).length ); // 1
+    
+    var x = [1, 5, 10, 15].find(function(value, index, arr) {
+        return value > 9;
+    });
+    
+    //console.log(x); //10
+    
+    var y = [1, 5, 10, 15].findIndex(function(value, index, arr) {
+        return value > 9;
+    });
+    
+    //console.log(y); //2
+    
+    console.log( Object.is(NaN, NaN) )  // true
+    console.log( Object.is(-0, +0) )    // false    
+    
+  })()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
 </script>
 </body>
