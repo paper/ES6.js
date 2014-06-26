@@ -60,7 +60,7 @@ String.prototype.startsWith = function(str, atIndex){
   atIndex = atIndex || 0;
   var index = this.indexOf(str, atIndex);
 
-  return index == atIndex;
+  return index === atIndex;
 }
 
 // endsWith的行为与其他两个方法有所不同。
@@ -318,12 +318,12 @@ Array.prototype.fill = function(n, begin, end){
 
 Object.is = function(a, b){
   // 有一个 +0 , 有一个 -0
-  if( (a === 0 && b === 0) && 1/a !== 1/b ){
+  if( a === 0 && b === 0 && 1/a !== 1/b ){
     return false;
   }
   
   //a=NaN, b=NaN
-  if( ES6.isNumber(a) && ES6.isNumber(b) && isNaN(a) && isNaN(b) ){
+  if( Number.isNaN(a) && Number.isNaN(b) ){
     return true;
   }
   
