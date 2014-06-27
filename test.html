@@ -23,11 +23,16 @@
   })()
   
   ;(function(){
-    var x = 1, y = 2;
+    /* */
+    //运算不支持 字符串拼接 
+    var x = 1, xy = 2, y = 3, yx = 4;
     var r = ES6.templateString({
       x : x,
-      y : y
-    },'${ x } + ${ y } = ${ x + y }');
+      y : y,
+      xy : xy,
+      yx : yx
+    },'${ x } + ${ y } + ${ xy } + ${ yx } = ${ x + y + xy + yx }');
+    /* */
     //console.log(r);
   })()
   
@@ -60,10 +65,63 @@
     
     //console.log(y); //2
     
-    console.log( Object.is(NaN, NaN) )  // true
-    console.log( Object.is(-0, +0) )    // false    
+    
     
   })()
+  
+  //测试 对象的扩展
+  ;(function(){
+    //console.log( Object.is(NaN, NaN) )  // true
+    //console.log( Object.is(-0, +0) )    // false    
+    
+    var target = { a: 1, b: 1 };
+    var source1 = { b: 2, c: 2 };
+    var source2 = { c: 3 };
+
+    Object.assign(target, source1, source2);
+    //target // {a:1, b:2, c:3}
+    
+    //console.log( ES6.Symbol() + "_test" );
+    //console.log( ES6.Symbol("Test").name );
+  })()
+  
+  ;(function(){
+    
+    var f = ES6.arrow('v => v');
+    console.log( f(3) );
+    
+    var g = ES6.arrow('y => y*2');
+    console.log( g(5) );
+    console.log( f(11) );
+    
+    var sum1 = ES6.arrow('(num1, num2) => num1 + num2');
+    console.log( sum1(100,2) )
+    
+    //var x = () => 5;
+    var x = ES6.arrow('() => 5');
+    console.log( x() )
+
+    //var getTempItem = id => ({ id: id, name: "Temp" });
+    var getTempItem = ES6.arrow('id => ({ id: id, name: "Temp" })');
+    console.log( getTempItem(3) )
+    
+    // 正常函数写法
+    //[1,2,3].map(function (x) {
+    //  return x * x;
+    //});
+
+    // 箭头函数写法
+    console.log( [1,2,3].map( ES6.arrow('x => x * x') ) );
+
+    //var sum = (num1, num2) => { return num1 + num2; }
+    var sum2 = ES6.arrow('(num1, num2) => { return num1 + num2; }')
+    console.log( sum2(200, 300) );
+    
+    
+    var result = [3,4,1,10,6].sort(ES6.arrow('(a, b) => a - b'));
+    console.log( result )
+    
+  })();
   
   
   

@@ -16,8 +16,8 @@ var ES6 = {}
   --------------------------------------------------------------------------
 */
 
-var _TYPE = ["String", "Number", "Function", "Boolean", "Object", "Array"];
-_TYPE.forEach(function(v){
+ES6._TYPE = ["String", "Number", "Function", "Boolean", "Object", "Array"];
+ES6._TYPE.forEach(function(v){
   ES6["is" + v] = function(para){
     return Object.prototype.toString.call(para) == "[object "+ v +"]";
   }
@@ -37,8 +37,6 @@ Object.prototype.keys = function(){
   
   return keys;
 }
-
-
 
 /**
   ------------------------------------------------------------------------
@@ -120,6 +118,7 @@ String.prototype.repeat = function(num){
   },'Hello ${name}, how are you ${time}?');
   => 'Hello Bob, how are you today?'
 
+  //运算不支持"字符串拼接" 
   var x = 1, y = 2;
   var r2 = ES6.templateString({
     x : x,
@@ -140,18 +139,14 @@ ES6.templateString = function(data, ts){
       var value = data[y];
 
       if( value == undefined ){
-        var keys = data.keys();		
-        var keysStr = '';
+        var keys = data.keys();
+        var keysStr = keys.join('|');
+        var keysReg = new RegExp('('+ keysStr +')(?=[^\\w$])', "g");
         
-        keys.forEach(function(v){
-          keysStr += "("+ v +")";
-        });
-        keysStr = "[" + keysStr + "]";
-
-        var c = y.replace(new RegExp(keysStr, "g"), function(a){
+        var c = (y + ' ').replace(keysReg, function(a){
           return data[a];
         });
-        
+
         return eval(c);
       }else{
         return value;
@@ -307,12 +302,12 @@ Array.prototype.fill = function(n, begin, end){
 
   1. Object.is()
   2. Object.assign()
-  3. proto属性，Object.setPrototypeOf()，Object.getPrototypeOf()
-  4. 增强的对象写法
-  5. 属性名表达式
-  6. Symbol
-  7. Proxy
-  8. Object.observe()，Object.unobserve()
+ *3. proto属性，Object.setPrototypeOf()，Object.getPrototypeOf()
+ *4. 增强的对象写法
+ *5. 属性名表达式
+ *6. Symbol (ruby也有一个Symbol，不要搞混淆)
+ *7. Proxy
+ *8. Object.observe()，Object.unobserve() -> 看 Array.observe()
   --------------------------------------------------------------------------
 */
 
@@ -329,6 +324,143 @@ Object.is = function(a, b){
   
   return a === b;
 }
+
+Object.assign = function(){
+  var args = Array.from(arguments);
+  var target = args[0];
+  var obj = null;
+  
+  for( var i = 1, len = args.length; i < len; i++ ){
+    obj = args[i];
+    
+    //将源对象（source）的所有可枚举属性
+    for(var key in obj){
+      target[key] = obj[key];
+    }
+  }
+  
+  return target;
+}
+
+//伪 Symbol :D
+ES6.Symbol = (function(){
+
+  function getRandomStr(){
+    var ran = Math.random() + "";
+    return ran.slice(2);
+  }
+  
+  return function(name){
+    var now = +new Date(),
+        ran1 = getRandomStr(),
+        ran2 = getRandomStr(),
+        ran3 = getRandomStr();
+    
+    var result = {
+      toString : function(){
+        return "symbol_" + now + ran1 + ran2 + ran3;
+      }
+    }
+    
+    if( ES6.isString(name) ){
+      result.name = name;
+    }
+
+    return result;
+  }
+})();
+
+
+/**
+  ------------------------------------------------------------------------
+  函数的扩展  
+
+ *1. 函数参数的默认值
+ *2. rest参数
+ *3. 扩展运算符
+  4. 箭头函数
+  --------------------------------------------------------------------------
+*/
+
+/*
+  模拟箭头函数
+  
+  var f1 = v => v
+  var f1 = ES6.arrow('v => v')
+
+  var f2 = () => 5
+  var f2 = ES6.arrow('() => 5')
+
+  var sum1 = (num1, num2) => num1 + num2
+  var sum1 = ES6.arrow('(num1, num2) => num1 + num2')
+
+  var sum2 = (num1, num2) => { return num1 + num2; }
+  var sum2 = ES6.arrow('(num1, num2) => { return num1 + num2; }')
+
+  var getTempItem = id => ({ id: id, name: "Temp" })
+  var getTempItem = ES6.arrow('id => ({ id: id, name: "Temp" })')
+
+  [1,2,3].map(x => x * x)
+  [1,2,3].map( ES6.arrow('x => x * x') )
+
+  var result = values.sort((a, b) => a - b)
+  var result = values.sort(ES6.arrow('(a, b) => a - b'))
+  
+  -----------------------------------
+  
+  其实箭头还可以嵌套的：
+  var f3 = v => v => v
+  等价于
+  var f3 = function(v){
+    return function(v){
+      return v;
+    }
+  }
+  
+  这个稍微复杂一点（多了递归），后续有可能会添加这个功能，目前暂不支持。
+  
+*/
+ES6.arrow = function( arrowStr ){
+  var arrowKey = '=>',
+      temp = arrowStr.split(arrowKey),
+      
+      leftArrowStr = temp[0].trim(),
+      rightArrowStr = temp[1].trim(),
+      
+      funcPara = leftArrowStr.startsWith("(")  ? leftArrowStr : "(" + leftArrowStr + ")",
+      funcBody = rightArrowStr.startsWith("{") ? rightArrowStr.match(/{([^{}]*)}/)[1] : "return " + rightArrowStr + ";",
+      
+      funcName = ES6.Symbol() + "";
+   
+  var fnStr = ES6.templateString({
+            funcPara : funcPara,
+            funcBody : funcBody,
+            funcName : funcName
+          },'function ${funcName}${funcPara}{ ${funcBody} }');
+
+  eval(fnStr);
+  
+  return eval(funcName);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
