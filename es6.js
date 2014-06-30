@@ -556,25 +556,6 @@ ES6.Set.prototype = {
   }
 }
 
-ES6.Map = function(arr){
-  var self = this;
-  
-  self._data = {};
-  self._trueKeys = [];
-  self.size = 0;
-  self._secretKey = "_paper_es6_map_secret_key_";
-  
-  //init
-  if( ES6.isArray(arr) ){
-    arr.forEach(function(v){
-      var key = v[0];
-      var value = v[1];
-      
-      self.set(key, value);
-    });
-  }
-}
-
 /**
   var m = new ES6.Map();
   
@@ -617,6 +598,25 @@ ES6.Map = function(arr){
   })
   console.log("============= forEach end =============");
 */
+ES6.Map = function(arr){
+  var self = this;
+  
+  self._data = {};
+  self._trueKeys = [];
+  self.size = 0;
+  self._secretKey = "_paper_es6_map_secret_key_";
+  
+  //init
+  if( ES6.isArray(arr) ){
+    arr.forEach(function(v){
+      var key = v[0];
+      var value = v[1];
+      
+      self.set(key, value);
+    });
+  }
+}
+
 ES6.Map.prototype = {
   //前提是key已经不是对象，数组，函数
   _createNewKey : function(key){
