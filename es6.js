@@ -444,13 +444,316 @@ ES6.arrow = function( arrowStr ){
 }
 
 
+/**
+  ------------------------------------------------------------------------
+  Set和Map数据结构  
+
+  1. Set
+  2. Map
+ *3. WeakMap
+  --------------------------------------------------------------------------
+*/
 
 
+/*
+  原生浏览器（FF 30.0）测试：
+  //认为 NaN NaN 相同(Object.is)
+  var items = new Set([1,2,3,4,NaN,NaN]);
+  items.size => 5
+  
+  //认为 -0, +0 相同(===)
+  var items = new Set([1,2,3,4,-0,+0]);
+  items.size => 5
+  
+  //认为 {a:1}, {a:1} 不同(===)
+  var items = new Set([1,2,3,4,{a:1},{a:1}]);
+  items.size => 6
+  
+  所以目前的测试结论很有可能是：
+  Set判断元素唯一，使用 === 判断，但NaN和NaN还是使用Object.is
+  
+*/
 
+ES6.Set = function(arr){
+  this._data = [];
+  this.size = 0;
+  
+  if( ES6.isArray(arr) ){
+    var tempArr;
+    
+    for( var i = 0, len = arr.length; i < len ;i++ ){
+      tempArr = arr[i];
+      
+      if( !this.has(tempArr) ){
+        this._data.push(tempArr);
+      }
+    }
+  }
+  this._setSize();
+}
 
+ES6.Set.prototype = {
+  
+  _setSize : function(){
+    this.size = this._data.length;
+  },
+  
+  _find : function(value){
+    var i = 0,
+        data = this._data,
+        len = data.length,
+        tempData;
+    
+    for(; i<len; i++){
+      tempData = data[i];
+      
+      if( tempData === value || Object.is( tempData, value ) ){
+        return {
+          has : true,
+          index : i
+        }
+      }
+    }
+    
+    return false;
+  },
 
+  add : function(value){
+    
+    if( !this.has(value) ){
+      this._data.push(value);
+    }
+    this._setSize();
+    
+    return this;
+  },
 
+  delete : function(value){
+    var findValue = this._find(value);
+    
+    if( !!findValue ){
+      var index = findValue.index;
+      this._data.splice(index, 1);
+      return true;
+    }
+    this._setSize();
+    
+    return false;
+  },
 
+  has : function(value){
+    
+    if( !!this._find(value) ){
+      return true;
+    }
+    
+    return false;
+  },
+
+  clear : function(){
+    this._data = [];
+    this._setSize();
+  }
+}
+
+ES6.Map = function(arr){
+  var self = this;
+  
+  self._data = {};
+  self._trueKeys = [];
+  self.size = 0;
+  self._secretKey = "_paper_es6_map_secret_key_";
+  
+  //init
+  if( ES6.isArray(arr) ){
+    arr.forEach(function(v){
+      var key = v[0];
+      var value = v[1];
+      
+      self.set(key, value);
+    });
+  }
+}
+
+/**
+  var m = new ES6.Map();
+  
+  var o = { a: 1 };
+  var r = [1,2];  
+  var f = function(){ console.log("fun") };
+  
+  var n = null;
+  var u = undefined;
+  var i = 262;
+  var s = "edition";
+  var b = true;
+  
+  m.set(o, "I am object")             // 键是 object
+  m.set(r, "I am array")              // 键是 array
+  m.set(f, "I am function")           // 键是 function
+  
+  m.set(n, "I am null")               // 键是 null
+  m.set(s, "I am string")             // 键是 字符串
+  m.set(i, "I am number")             // 键是 数值
+  m.set(u, "I am undefined")          // 键是 undefined
+  m.set(b, "I am boolean")            // 键是 boolean
+
+  console.log( "m.keys() = ", m.keys() )
+  console.log( "m.values() = ", m.values() )
+  console.log( "m.entries() = ", m.entries() )
+  
+  console.log("============= change =============");
+  o.b = 2;
+  r.push(3);
+  
+  //值不变
+  console.log( "m.entries() = ", m.entries() )
+  
+  console.log("============= forEach begin =============");
+  m.forEach(function(value, key, map){
+    console.log(value);
+    console.log(key);
+    //console.log(map);
+  })
+  console.log("============= forEach end =============");
+*/
+ES6.Map.prototype = {
+  //前提是key已经不是对象，数组，函数
+  _createNewKey : function(key){
+    var newKey = "";
+    var secretKey = this._secretKey;
+    
+    if( key === undefined ){
+      newKey = "undefined" + secretKey;
+    }else if( key === null ){
+      newKey = "null" + secretKey;
+    }else{
+      newKey = key.toString() + Object.prototype.toString.call(key);
+    }
+    
+    return newKey;
+  },
+  
+  _com : function(key, cb1, cb2){
+    if( ES6.isObject(key) || ES6.isArray(key) || ES6.isFunction(key)){
+      cb1( this._secretKey );
+    }else{
+      cb2( this._createNewKey(key) );
+    }
+  },
+  
+  _setSize : function(){
+    this.size = this._trueKeys.length;
+  },
+  
+  //因为在ES5，key只能是字符串
+  set : function(key, value){
+    var self = this;
+    
+    self._com(key, function(sk){
+      key[sk] = value;
+    }, function(newKey){
+      self._data[newKey] = value;
+    });
+    
+    self._trueKeys.push( key );
+    
+    self._setSize();
+  },
+  
+  get : function(key){
+    var self = this;
+    var value;
+    
+    self._com(key, function(sk){
+      value = key[sk];
+    }, function(newKey){
+      value = self._data[newKey];
+    });
+    
+    return value;
+  },
+  
+  has : function(key){
+    return typeof this.get(key) != "undefined";
+  },
+  
+  delete : function(key){
+    var self = this;
+    var result = false;
+    
+    self._com(key, function(sk){
+    
+      var trueKeys = self._trueKeys.concat();
+      
+      result = trueKeys.some(function(v, i, arr){
+        if( v && v[sk] === key[sk] ){
+          self._trueKeys.splice(i, 1);
+          delete key[sk];
+          return true;
+        }
+      });
+      
+    }, function(newKey){
+      
+      var trueKeys = self._trueKeys.concat();
+      
+      result = trueKeys.some(function(v, i, arr){
+        if( self._createNewKey(v) === newKey ){
+          self._trueKeys.splice(i, 1);
+          delete self._data[newKey];
+          return true;
+        }
+      });
+      
+    });
+    
+    self._setSize();
+    
+    return result;
+  },
+  
+  clear : function(){
+    this._data = {};
+    this._trueKeys = [];
+    this._setSize();
+  },
+  
+  keys : function(){
+    return this._trueKeys;
+  },
+  
+  values : function(){
+    var self = this;
+    var result = [];
+    
+    self._trueKeys.forEach(function(v){
+      result.push( self.get(v) );
+    });
+    
+    return result;
+  },
+  
+  entries : function(){
+    var self = this;
+    var result = [];
+    
+    self._trueKeys.forEach(function(key){
+      result.push( [key, self.get(key)] );
+    });
+    
+    return result;
+  },
+  
+  forEach : function(cb){
+    var self = this;
+   
+    self._trueKeys.forEach(function(key){
+      cb( self.get(key), key,  self);
+    });
+  }
+  
+}
 
 
 

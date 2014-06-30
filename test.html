@@ -85,25 +85,26 @@
     //console.log( ES6.Symbol("Test").name );
   })()
   
+  //test ES6.arrow
   ;(function(){
     
     var f = ES6.arrow('v => v');
-    console.log( f(3) );
+    //console.log( f(3) );
     
     var g = ES6.arrow('y => y*2');
-    console.log( g(5) );
-    console.log( f(11) );
+    //console.log( g(5) );
+    //console.log( f(11) );
     
     var sum1 = ES6.arrow('(num1, num2) => num1 + num2');
-    console.log( sum1(100,2) )
+    //console.log( sum1(100,2) )
     
     //var x = () => 5;
     var x = ES6.arrow('() => 5');
-    console.log( x() )
+    //console.log( x() )
 
     //var getTempItem = id => ({ id: id, name: "Temp" });
     var getTempItem = ES6.arrow('id => ({ id: id, name: "Temp" })');
-    console.log( getTempItem(3) )
+    //console.log( getTempItem(3) )
     
     // 正常函数写法
     //[1,2,3].map(function (x) {
@@ -111,20 +112,64 @@
     //});
 
     // 箭头函数写法
-    console.log( [1,2,3].map( ES6.arrow('x => x * x') ) );
+    //console.log( [1,2,3].map( ES6.arrow('x => x * x') ) );
 
     //var sum = (num1, num2) => { return num1 + num2; }
     var sum2 = ES6.arrow('(num1, num2) => { return num1 + num2; }')
-    console.log( sum2(200, 300) );
+    //console.log( sum2(200, 300) );
     
     
     var result = [3,4,1,10,6].sort(ES6.arrow('(a, b) => a - b'));
-    console.log( result )
+    //console.log( result )
     
   })();
   
   
+  //测试 Set和Map数据结构  
+  ;(function(){
+
+    //Map
+    var m = new ES6.Map();
   
+    var o = { a: 1 };
+    var r = [1,2];  
+    var f = function(){ console.log("fun") };
+    
+    var n = null;
+    var u = undefined;
+    var i = 262;
+    var s = "edition";
+    var b = true;
+    
+    m.set(o, "I am object")             // 键是 object
+    m.set(r, "I am array")              // 键是 array
+    m.set(f, "I am function")           // 键是 function
+    
+    m.set(n, "I am null")               // 键是 null
+    m.set(s, "I am string")             // 键是 字符串
+    m.set(i, "I am number")             // 键是 数值
+    m.set(u, "I am undefined")          // 键是 undefined
+    m.set(b, "I am boolean")            // 键是 boolean
+
+    //console.log( "m.keys() = ", m.keys() )
+    //console.log( "m.values() = ", m.values() )
+    //console.log( "m.entries() = ", m.entries() )
+    
+    //console.log("============= change =============");
+    o.b = 2;
+    r.push(3);
+    
+    //值不变
+    //console.log( "m.entries() = ", m.entries() )
+    
+    //console.log("============= forEach begin =============");
+    m.forEach(function(value, key, map){
+      //console.log(value);
+      //console.log(key);
+      //console.log(map);
+    })
+    //console.log("============= forEach end =============");
+  })()
   
   
   
