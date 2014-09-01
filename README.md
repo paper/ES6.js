@@ -8,5 +8,4 @@ es6.js
 看过 [阮一峰](http://www.ruanyifeng.com/home.html) 老师的文章 [ECMAScript 6入门](http://es6.ruanyifeng.com/)
 写的很棒，学到不少。
 
-所以，这里只是为了学习es6，不是为了生产。
-生产的话，请使用：Google公司的Traceur编译器
+所以，这里只是为了学习es6。
